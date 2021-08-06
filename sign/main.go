@@ -10,6 +10,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"log"
+	"time"
 )
 
 func main() {
@@ -39,6 +40,7 @@ Z4UMR7EOcpfdUE9Hf3m/hs+FUR45uBJeDK1HSFHD8bHKD6kv8FPGfJTotc+2xjJw
 oYi+1hqp1fIekaxsyQIDAQAB
 -----END PUBLIC KEY-----`)
 
+	t := time.Now()
 	block, _ := pem.Decode(privKeyBytes)
 	privKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
@@ -51,7 +53,9 @@ oYi+1hqp1fIekaxsyQIDAQAB
 		log.Fatal(err)
 	}
 
-	data := []byte("(request-target): post /foo?param=value&pet=dog\nhost: example.com\ndate: Sun, 05 Jan 2014 21:31:40 GMT")
+	dataString := fmt.Sprintf("(request-target): post /foo?param=value&pet=dog\nhost: example.com\ndate: %s", t.In(time.FixedZone("GMT", 0)).Format(time.RFC1123))
+	fmt.Println(dataString)
+	data := []byte(dataString)
 	rng := rand.Reader
 
 	hashed := sha256.Sum256(data)
